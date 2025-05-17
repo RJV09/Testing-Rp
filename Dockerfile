@@ -1,8 +1,8 @@
-FROM ubuntu:24.04
+FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install dependencies
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     qemu-system-x86 \
     qemu-utils \
@@ -15,19 +15,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     && rm -rf /var/lib/apt/lists/*
 
-# Setup directories
+
 RUN mkdir -p /data /iso /novnc
 
-# Install noVNC
+
 RUN wget https://github.com/novnc/noVNC/archive/refs/heads/master.zip -O /tmp/novnc.zip && \
     unzip /tmp/novnc.zip -d /tmp && \
     mv /tmp/noVNC-master/* /novnc && \
     rm -rf /tmp/novnc.zip /tmp/noVNC-master
 
-# Windows 10 ISO
+
 ENV ISO_URL="https://archive.org/download/windows-10-lite-edition-19h2-x64/Windows%2010%20Lite%20Edition%2019H2%20x64.iso"
 
-# Create startup script with Windows-specific fixes
+
 RUN echo '#!/bin/bash\n\
 set -e\n\
 \n\
@@ -37,7 +37,7 @@ if [ -e /dev/kvm ]; then\n\
   KVM_ARG="-enable-kvm"\n\
   CPU_ARG="host"\n\
   MEMORY="4G"\n\
-  SMP_CORES=2\n\
+  SMP_CORES=4\n\
 else\n\
   echo "⚠️  KVM not available - using slower emulation mode"\n\
   KVM_ARG=""\n\
